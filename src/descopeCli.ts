@@ -91,7 +91,7 @@ export default async ( props: descopeCliProps) => {
                     return {};
                 }
                 const ref = res.data?.pendingRef;
-                console.log(chalk.yellow("Enchanted link sent. Please click XX"));
+                console.log(chalk.yellow("Enchanted link sent. Please click it."));
                 const jwt = await clientAuth.magicLink.crossDevice.waitForSession(ref!);
                 return handleResponse(jwt);
             },  
