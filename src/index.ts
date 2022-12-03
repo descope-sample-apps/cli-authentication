@@ -1,8 +1,5 @@
-import DescopeClient from "@descope/node-sdk";
-
 import { Command } from "commander";
 import * as dotenv from "dotenv";
-import { isConstructorTypeNode } from "typescript";
 import descopeCli from "./descopeCli";
 dotenv.config();
 
