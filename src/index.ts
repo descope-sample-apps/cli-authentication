@@ -37,19 +37,16 @@ program
         let jwt;
         switch (opts.method) {
             case "totp":   
-            
+                jwt = await descpoeCli.signIn.totp(opts.email);
                 break;
             case "enchanted":   
-                jwt = await descpoeCli.signIn.enchantedLink(opts.email)    ;
-
+                jwt = await descpoeCli.signIn.enchantedLink(opts.email);
                 break;
             case "opt":                
             default:
                 jwt = (await descpoeCli.signIn.otp(opts.email));
-
                 break;
         }
-
         console.log(jwt);
     });
 
