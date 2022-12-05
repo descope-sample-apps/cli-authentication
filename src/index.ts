@@ -1,10 +1,15 @@
+import chalk from "chalk";
 import { Command } from "commander";
-import * as dotenv from "dotenv";
 import descopeCli from "./descopeCli";
+import * as dotenv from "dotenv";
 dotenv.config();
 
 const program = new Command();
 
+if (!process.env.DESCOPE_PROJECT_ID) {
+    console.log(chalk.bgRed.white("Missing DESCOPE_PROJECT_ID env parameter"))
+    process.exit(1);
+}
 program
 	.name("cli-authentication")
 	.description("Sample app for CLI authentication with Descope")
@@ -25,6 +30,7 @@ program
     .option(
         "-m, --method <otp|totp|enchanted>",
         "Method for login",
+        "otp"
     )
     .action(async (opts: any) => {
         
