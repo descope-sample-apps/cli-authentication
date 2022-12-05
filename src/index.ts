@@ -9,7 +9,7 @@ dotenv.config();
 const program = new Command();
 
 if (!process.env.DESCOPE_PROJECT_ID) {
-    console.log(chalk.bgRed.white("MISSING DESCOPE_PROJECT_ID ENVIRONMENT PARAMETER"))
+    console.log(chalk.bgRed.white("Missing DESCOPE_PROJECT_ID env parameter"))
     process.exit(1);
 }
 program
