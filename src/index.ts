@@ -2,8 +2,6 @@ import chalk from "chalk";
 import { Command } from "commander";
 import descopeCli from "./descopeCli";
 import * as dotenv from "dotenv";
-import { env, exit } from "process";
-import { preProcessFile } from "typescript";
 dotenv.config();
 
 const program = new Command();
