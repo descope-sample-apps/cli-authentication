@@ -85,14 +85,15 @@ export default async ( props: descopeCliProps) => {
                 return handleResponse(jwt);
             },
             enchantedLink: async (identifier: string) => {
-                const res = await clientAuth.magicLink.crossDevice.signIn.email(identifier,redirectUri);
+                const res = await clientAuth.enchantedLink.signIn(identifier,redirectUri);
                 if (!res.ok) {
                     consoleError(res.error);
                     return {};
                 }
                 const ref = res.data?.pendingRef;
-                console.log(chalk.yellow("Enchanted link sent. Please click it."));
-                const jwt = await clientAuth.magicLink.crossDevice.waitForSession(ref!);
+                const code = res.data?.identifier;
+                console.log(chalk.yellow(`Enchanted link sent. Please click ${code}.`));
+                const jwt = await clientAuth.enchantedLink.waitForSession(ref!);
                 return handleResponse(jwt);
             },  
             totp: async (identifier: string) => {
