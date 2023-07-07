@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/descope-sample-apps/cli-authentication#readme",
   "dependencies": {
-    "@descope/node-sdk": "^1.0.4-alpha.8",
+    "@descope/node-sdk": "^0.0.0-next-8ed0e087-20230707",
     "@types/node": "^18.11.10",
     "chalk": "4.1.2",
     "commander": "^9.4.1",
