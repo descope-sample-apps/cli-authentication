@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rimraf ./build && tsc",
-    "dsc": "npm run build && node build/index.js"
+    "lint": "eslint src/*.ts --fix"
   },
   "repository": {
     "type": "git",
@@ -19,14 +19,20 @@
   },
   "homepage": "https://github.com/descope-sample-apps/cli-authentication#readme",
   "dependencies": {
-    "@descope/node-sdk": "^1.0.4-alpha.8",
-    "@types/node": "^18.11.10",
+    "@descope/node-sdk": "1.5.7",
+    "@types/node": "20.8.6",
     "chalk": "4.1.2",
-    "commander": "^9.4.1",
-    "dotenv": "^16.0.3",
-    "node": "^19.2.0",
-    "node-fetch": "^3.3.0",
-    "rimraf": "^3.0.2",
-    "typescript": "^4.9.3"
+    "commander": "11.1.0",
+    "node": "20.7.0",
+    "node-fetch": "3.3.2",
+    "prettier": "^3.0.3",
+    "rimraf": "5.0.5"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.8.0",
+    "@typescript-eslint/parser": "^6.8.0",
+    "eslint": "^8.51.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "typescript": "^5.2.2"
   }
 }
