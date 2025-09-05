@@ -20,10 +20,10 @@
   "homepage": "https://github.com/descope-sample-apps/cli-authentication#readme",
   "dependencies": {
     "@descope/node-sdk": "1.5.7",
-    "@types/node": "20.8.6",
+    "@types/node": "20.19.11",
     "chalk": "4.1.2",
     "commander": "11.1.0",
-    "node": "20.7.0",
+    "node": "20.19.4",
     "node-fetch": "3.3.2",
     "prettier": "3.0.3",
     "rimraf": "5.0.5"
