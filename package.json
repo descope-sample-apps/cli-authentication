@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run build && vitest run --coverage",
+    "test:watch": "vitest",
     "build": "rimraf ./build && tsc",
     "lint": "eslint src/*.ts --fix"
   },
@@ -23,7 +24,6 @@
     "@types/node": "20.8.6",
     "chalk": "4.1.2",
     "commander": "11.1.0",
-    "node": "20.7.0",
     "node-fetch": "3.3.2",
     "prettier": "3.0.3",
     "rimraf": "5.0.5"
@@ -33,6 +33,8 @@
     "@typescript-eslint/parser": "7.0.1",
     "eslint": "8.51.0",
     "eslint-plugin-prettier": "5.0.1",
-    "typescript": "5.2.2"
+    "typescript": "5.2.2",
+    "@vitest/coverage-v8": "1.6.0",
+    "vitest": "1.6.0"
   }
 }
