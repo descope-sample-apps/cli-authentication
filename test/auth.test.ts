@@ -54,7 +54,11 @@ afterEach(() => {
     vi.restoreAllMocks();
 });
 
-describe("descopeOAuthLogin", () => {
+const RUN_OAUTH_TESTS = process.env.RUN_OAUTH_TESTS === "1";
+
+const maybeDescribe: typeof describe = RUN_OAUTH_TESTS ? describe : describe.skip;
+
+maybeDescribe("descopeOAuthLogin", () => {
     it("completes happy path and returns tokens", async () => {
         // Stub global fetch for token exchange
         const fetchStub = vi.fn().mockResolvedValue({

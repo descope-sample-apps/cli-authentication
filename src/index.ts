@@ -2,6 +2,7 @@ import { Command } from "commander";
 import chalk from "chalk";
 import DescopeClient from "@descope/node-sdk";
 import * as readline from "readline";
+/* removed token caching; no fs/os/path */
 
 export const getCode = async (query: string) => {
 	const rl = readline.createInterface({
@@ -18,6 +19,8 @@ export const getCode = async (query: string) => {
 
 export const buildProgram = (): Command => {
 	const program = new Command();
+    // removed token caching and local JWT decoding
+
 
 	program
 		.name("CLI Authentication")
@@ -88,17 +91,17 @@ export const buildProgram = (): Command => {
 	program
 		.command("me")
 		.description("Get user information using a refresh token")
-		.requiredOption("-r, --refresh <refresh>", "Refresh token")
+        .requiredOption("-r, --refresh <refresh>", "Refresh token")
 		.requiredOption("-p, --projectId <projectId>", "Descope Project ID")
 		.action(async (opts) => {
 			const clientAuth = DescopeClient({ projectId: opts.projectId });
 			try {
-				const me = await clientAuth.me(opts.refresh);
-				if (!me.ok) {
-					console.error(chalk.red(`Failed to fetch user info: ${me.error?.errorMessage || "unknown error"}`));
-					process.exit(1);
-				}
-				process.stdout.write(`${JSON.stringify(me.data)}\n`);
+                const me = await clientAuth.me(opts.refresh);
+                if (!me.ok) {
+                    console.error(chalk.red(`Failed to fetch user info: ${me.error?.errorMessage || "unknown error"}`));
+                    process.exit(1);
+                }
+                process.stdout.write(`${JSON.stringify(me.data)}\n`);
 			} catch (error) {
 				console.error(chalk.red(`Failed to fetch user info: ${error}`));
 				process.exit(1);
@@ -108,13 +111,13 @@ export const buildProgram = (): Command => {
 	program
 		.command("validate")
 		.description("Validate provided session token")
-		.requiredOption("-s, --session <session>", "Session token")
+        .requiredOption("-s, --session <session>", "Session token")
 		.requiredOption("-p, --projectId <projectId>", "Descope Project ID")
 		.action(async (opts) => {
 			const clientAuth = DescopeClient({ projectId: opts.projectId });
 			try {
-				const info = await clientAuth.validateSession(opts.session);
-				process.stdout.write(`${JSON.stringify({ ok: true, sub: info.token.sub, exp: info.token.exp })}\n`);
+                const info = await clientAuth.validateSession(opts.session);
+                process.stdout.write(`${JSON.stringify({ ok: true, sub: info.token.sub, exp: info.token.exp })}\n`);
 			} catch (error) {
 				console.error(chalk.red(`Invalid session token: ${error}`));
 				process.exit(1);
@@ -124,13 +127,13 @@ export const buildProgram = (): Command => {
 	program
 		.command("refresh")
 		.description("Refresh session using a provided refresh token and get a new session token")
-		.requiredOption("-r, --refresh <refresh>", "Refresh token")
+        .requiredOption("-r, --refresh <refresh>", "Refresh token")
 		.requiredOption("-p, --projectId <projectId>", "Descope Project ID")
 		.action(async (opts) => {
 			const clientAuth = DescopeClient({ projectId: opts.projectId });
 			try {
-				const info = await clientAuth.refreshSession(opts.refresh);
-				process.stdout.write(`${info.jwt}\n`);
+                const info = await clientAuth.refreshSession(opts.refresh);
+                process.stdout.write(`${info.jwt}\n`);
 			} catch (error) {
 				console.error(chalk.red(`Failed to refresh session: ${error}`));
 				process.exit(1);
@@ -142,14 +145,14 @@ export const buildProgram = (): Command => {
 		.description(
 			"Validate provided session token, and if failed - refresh it and get a new one, using the provided refresh token",
 		)
-		.requiredOption("-r, --refresh <refresh>", "Refresh token")
-		.requiredOption("-s, --session <session>", "Session token")
+        .requiredOption("-r, --refresh <refresh>", "Refresh token")
+        .requiredOption("-s, --session <session>", "Session token")
 		.requiredOption("-p, --projectId <projectId>", "Descope Project ID")
 		.action(async (opts) => {
 			const clientAuth = DescopeClient({ projectId: opts.projectId });
 			try {
-				const info = await clientAuth.validateAndRefreshSession(opts.session, opts.refresh);
-				process.stdout.write(`${info.jwt}\n`);
+                const info = await clientAuth.validateAndRefreshSession(opts.session, opts.refresh);
+                process.stdout.write(`${info.jwt}\n`);
 			} catch (error) {
 				console.error(chalk.red(`Failed to validate/refresh: ${error}`));
 				process.exit(1);

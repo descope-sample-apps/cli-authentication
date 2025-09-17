@@ -65,9 +65,12 @@ export const descopeOAuthLogin = async (
 					// Best-effort close
 					try {
 						// Close active sockets where supported
-						const s: any = server as any;
+						const s = server as unknown as { closeAllConnections?: () => void };
 						s.closeAllConnections?.();
-					} catch {}
+					} catch (error) {
+						// Ignore — not all Node versions expose closeAllConnections
+						void error;
+					}
 					server.close();
 				};
 
