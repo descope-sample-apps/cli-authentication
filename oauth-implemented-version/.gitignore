@@ -1,0 +1,75 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# PIDs
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependencies
+node_modules/
+
+# Build outputs
+/dist/
+/build/
+/lib/
+/out/
+
+# Source maps (app builds usually don't need them committed)
+*.map
+
+# TypeScript
+*.tsbuildinfo
+
+# Testing & coverage
+coverage/
+.nyc_output/
+.c8/
+
+# Caches
+.eslintcache
+.parcel-cache/
+.turbo/
+.cache/
+.ts-node/
+.vite/
+.rollup.cache/
+
+# Package artifacts
+*.tgz
+
+# Env files (keep secrets out of git)
+.env
+.env.*
+!.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editors & IDEs
+.idea/
+.vscode/
+*.swp
+
+# npm/pnpm state
+.npm/
+.pnpm-store/
+
+# Optional: local temp files
+.tmp/
+tmp/
+
+# Ignore sensitive docs
+IMPLEMENTATION_SUMMARY.md
+SECURITY_RECOMMENDATIONS.md

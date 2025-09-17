@@ -1,0 +1,46 @@
+{
+  "name": "descope-cli-auth-sample-app",
+  "version": "1.0.0",
+  "description": "Sample CLI demonstrating Descope authentication patterns",
+  "main": "dist/index.js",
+  "bin": {
+    "sample-cli": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "rimraf ./dist && tsc",
+    "start": "npm run build && node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "test": "jest",
+    "lint": "eslint src/*.ts --fix"
+  },
+  "keywords": [
+    "descope",
+    "cli",
+    "authentication",
+    "sample"
+  ],
+  "author": "descope",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.5.1",
+    "@typescript-eslint/eslint-plugin": "^8.44.0",
+    "@typescript-eslint/parser": "^8.44.0",
+    "eslint": "^9.35.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "jest": "^30.0.5",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "ts-jest": "^29.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@descope/node-sdk": "^1.7.13",
+    "chalk": "^4.1.2",
+    "commander": "^14.0.0",
+    "dotenv": "^17.2.1",
+    "tslib": "^2.8.1"
+  }
+}
