@@ -73,7 +73,6 @@ export const descopeOAuthLogin = async (
 			// fall through
 		}
 	}
-
 	console.log(chalk.yellow("Starting OAuth2 login flow..."));
 
 	const state = randomString(16);
