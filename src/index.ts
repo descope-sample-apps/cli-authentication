@@ -58,12 +58,26 @@ program
 	.requiredOption("-p, --projectId <projectId>", "Descope Project ID")
 	.option("-b, --baseUrl <baseUrl>", "Descope base URL", "https://api.descope.com")
 	.option("-c, --callbackPort <port>", "Local callback port", "8088")
+    .option("-o, --output <output>", "Output type: session|refresh|json", "session")
 	.action(async (opts) => {
 		try {
-			console.log(chalk.blue("\uD83D\uDD10 Starting OAuth2 authentication..."));
+            console.error(chalk.blue("\uD83D\uDD10 Starting OAuth2 authentication..."));
 			const jwt = await descopeOAuthLogin(opts.projectId, opts.baseUrl, opts.callbackPort);
-			console.log(chalk.green("\u2705 Authentication successful!"));
-			console.log(chalk.gray(`Session JWT: ${jwt.sessionJwt.substring(0, 50)}...`));
+            const out = String(opts.output || "session").toLowerCase();
+            if (out === "session") {
+                process.stdout.write(`${jwt.sessionJwt}\n`);
+            } else if (out === "refresh") {
+                if (!jwt.refreshJwt) {
+                    console.error(chalk.red("No refresh token returned by the provider"));
+                    process.exit(1);
+                }
+                process.stdout.write(`${jwt.refreshJwt}\n`);
+            } else if (out === "json") {
+                process.stdout.write(`${JSON.stringify(jwt)}\n`);
+            } else {
+                console.error(chalk.red(`Unknown --output value: ${opts.output}. Use session|refresh|json.`));
+                process.exit(1);
+            }
 		} catch (error) {
 			console.error(chalk.red(`\u274C Authentication failed: ${error}`));
 			process.exit(1);
@@ -72,32 +86,38 @@ program
 
 program
 	.command("me")
-	.description("Get user information based on the provided refresh token")
-	.requiredOption("-r, --refresh <refresh>", "Refresh token")
+    .description("Get user information using a refresh token")
+    .requiredOption("-r, --refresh <refresh>", "Refresh token")
 	.requiredOption("-p, --projectId <projectId>", "Descope Project ID")
 	.action(async (opts) => {
-		const clientAuth = DescopeClient({ projectId: opts.projectId });
-
-		console.log("User Details (me)");
-		console.log("*****************");
-		const me = await clientAuth.me(opts.refresh);
-		console.log(me.data);
-		console.log();
+        const clientAuth = DescopeClient({ projectId: opts.projectId });
+        try {
+            const me = await clientAuth.me(opts.refresh);
+            if (!me.ok) {
+                console.error(chalk.red(`Failed to fetch user info: ${me.error?.errorMessage || "unknown error"}`));
+                process.exit(1);
+            }
+            process.stdout.write(`${JSON.stringify(me.data)}\n`);
+        } catch (error) {
+            console.error(chalk.red(`Failed to fetch user info: ${error}`));
+            process.exit(1);
+        }
 	});
 
 program
 	.command("validate")
 	.description("Validate provided session token")
-	.requiredOption("-s, --session <refresh>", "Session token")
+    .requiredOption("-s, --session <session>", "Session token")
 	.requiredOption("-p, --projectId <projectId>", "Descope Project ID")
 	.action(async (opts) => {
 		const clientAuth = DescopeClient({ projectId: opts.projectId });
-
-		console.log("Validating...");
-		const newJwt = await clientAuth.validateSession(opts.session);
-		console.log();
-		console.log("Response:");
-		console.log(newJwt);
+        try {
+            const info = await clientAuth.validateSession(opts.session);
+            process.stdout.write(`${JSON.stringify({ ok: true, sub: info.token.sub, exp: info.token.exp })}\n`);
+        } catch (error) {
+            console.error(chalk.red(`Invalid session token: ${error}`));
+            process.exit(1);
+        }
 	});
 
 program
@@ -107,12 +127,13 @@ program
 	.requiredOption("-p, --projectId <projectId>", "Descope Project ID")
 	.action(async (opts) => {
 		const clientAuth = DescopeClient({ projectId: opts.projectId });
-
-		console.log("Refreshing...");
-		const newJwt = await clientAuth.refreshSession(opts.refresh);
-		console.log();
-		console.log("New Session JWT2:");
-		console.log(newJwt);
+        try {
+            const info = await clientAuth.refreshSession(opts.refresh);
+            process.stdout.write(`${info.jwt}\n`);
+        } catch (error) {
+            console.error(chalk.red(`Failed to refresh session: ${error}`));
+            process.exit(1);
+        }
 	});
 
 program
@@ -121,16 +142,17 @@ program
 		"Validate provided session token, and if failed - refresh it and get a new one, using the provided refresh token",
 	)
 	.requiredOption("-r, --refresh <refresh>", "Refresh token")
-	.requiredOption("-s, --session <refresh>", "Session token")
+    .requiredOption("-s, --session <session>", "Session token")
 	.requiredOption("-p, --projectId <projectId>", "Descope Project ID")
 	.action(async (opts) => {
 		const clientAuth = DescopeClient({ projectId: opts.projectId });
-
-		console.log("Refreshing...");
-		const newJwt = await clientAuth.validateAndRefreshSession(opts.session, opts.refresh);
-		console.log();
-		console.log("New Session JWT2:");
-		console.log(newJwt);
+        try {
+            const info = await clientAuth.validateAndRefreshSession(opts.session, opts.refresh);
+            process.stdout.write(`${info.jwt}\n`);
+        } catch (error) {
+            console.error(chalk.red(`Failed to validate/refresh: ${error}`));
+            process.exit(1);
+        }
 	});
 
 program.parse();

@@ -1,8 +1,5 @@
 import chalk from "chalk";
-import DescopeClient from "@descope/node-sdk";
 import * as crypto from "crypto";
-import * as fs from "fs";
-import * as path from "path";
 import { createServer } from "http";
 import { exec } from "child_process";
 
@@ -13,29 +10,6 @@ export interface JwtResponse {
 	sessionJwt: string;
 	refreshJwt: string;
 }
-
-const JWT_DIR = path.join(process.env.HOME || process.env.USERPROFILE || "", ".config", "descope");
-
-const getJwtFilePath = (projectId: string): string => path.join(JWT_DIR, `${projectId}.jwt`);
-
-export const loadJwtFromDisk = async (projectId: string): Promise<JwtResponse | undefined> => {
-	const jwtFilePath = getJwtFilePath(projectId);
-	if (!fs.existsSync(jwtFilePath)) return undefined;
-	try {
-		return JSON.parse(fs.readFileSync(jwtFilePath, "utf8"));
-	} catch {
-		return undefined;
-	}
-};
-
-export const saveJwtToDisk = async (projectId: string, jwt: JwtResponse): Promise<JwtResponse> => {
-	const jwtFilePath = getJwtFilePath(projectId);
-	if (!fs.existsSync(JWT_DIR)) {
-		fs.mkdirSync(JWT_DIR, { recursive: true });
-	}
-	fs.writeFileSync(jwtFilePath, JSON.stringify(jwt));
-	return jwt;
-};
 
 const randomString = (length: number): string => crypto.randomBytes(length).toString("base64url").slice(0, length);
 const sha256Hash = (input: string): Buffer => crypto.createHash("sha256").update(input).digest();
@@ -59,21 +33,7 @@ export const descopeOAuthLogin = async (
 	baseUrl = "https://api.descope.com",
 	callbackPort = "8088",
 ): Promise<JwtResponse> => {
-	const clientAuth = DescopeClient({ projectId, baseUrl });
-
-	// Try cache first
-	const jwtCache = await loadJwtFromDisk(projectId);
-	if (jwtCache) {
-		try {
-			if (await clientAuth.validateSession(jwtCache.sessionJwt)) {
-				console.log(chalk.green("✓ Using cached authentication token"));
-				return jwtCache;
-			}
-		} catch {
-			// fall through
-		}
-	}
-	console.log(chalk.yellow("Starting OAuth2 login flow..."));
+    console.error(chalk.yellow("Starting OAuth2 login flow..."));
 
 	const state = randomString(16);
 	const codeVerifier = randomString(64);
@@ -149,13 +109,13 @@ export const descopeOAuthLogin = async (
 					redirect_uri: redirectUri,
 					code_verifier: codeVerifier,
 				})
-					.then((jwt) => saveJwtToDisk(projectId, jwt).then(resolve))
+                    .then((jwt) => resolve(jwt))
 					.catch(reject);
 			}
 		});
 
 		server.listen(callbackPort, () => {
-			console.log(chalk.yellow(`Opening browser to: ${authURL}`));
+                console.error(chalk.yellow(`Opening browser to: ${authURL}`));
 			openUrl(authURL);
 		});
 
