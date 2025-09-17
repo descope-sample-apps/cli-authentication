@@ -3,6 +3,9 @@ import * as crypto from "crypto";
 import { createServer } from "http";
 import { exec } from "child_process";
 
+/**
+ * Response containing tokens returned by the OAuth/token exchange flow.
+ */
 export interface JwtResponse {
 	ok: boolean;
 	code: number;
@@ -11,10 +14,17 @@ export interface JwtResponse {
 	refreshJwt: string;
 }
 
+// Helpers for PKCE (Proof Key for Code Exchange)
 const randomString = (length: number): string => crypto.randomBytes(length).toString("base64url").slice(0, length);
 const sha256Hash = (input: string): Buffer => crypto.createHash("sha256").update(input).digest();
 const base64URLEncode = (buffer: Buffer): string => buffer.toString("base64url");
 
+/**
+ * Open the given URL using the platform's default browser.
+ * - macOS: `open`
+ * - Windows: `start`
+ * - Linux: `xdg-open`
+ */
 const openUrl = (url: string): void => {
 	const platform = process.platform;
 	if (platform === "darwin") {
@@ -33,6 +43,7 @@ export const descopeOAuthLogin = async (
 	baseUrl = "https://api.descope.com",
 	callbackPort = "8088",
 ): Promise<JwtResponse> => {
+    // Start the OAuth2 PKCE flow: compute state, code verifier, and challenge
     console.error(chalk.yellow("Starting OAuth2 login flow..."));
 
 	const state = randomString(16);
@@ -43,6 +54,7 @@ export const descopeOAuthLogin = async (
 	const authorizationEndpoint = `${baseUrl}/oauth2/v1/authorize`;
 	const tokenEndpoint = `${baseUrl}/oauth2/v1/token`;
 
+    // OAuth2 authorization request parameters (including PKCE S256 challenge)
 	const authParams = new URLSearchParams({
 		response_type: "code",
 		client_id: projectId,
@@ -56,11 +68,13 @@ export const descopeOAuthLogin = async (
 	const authURL = `${authorizationEndpoint}?${authParams.toString()}`;
 
 	return await new Promise<JwtResponse>((resolve, reject) => {
+        // Minimal local HTTP server to capture the OAuth redirect back
 		const server = createServer((req, res) => {
 			if (req.url?.startsWith("/callback")) {
 				const url = new URL(req.url, local);
 				const params = url.searchParams;
 
+                // Ensure server resources are released even if errors occur
 				const cleanup = () => {
 					// Best-effort close
 					try {
@@ -84,6 +98,7 @@ export const descopeOAuthLogin = async (
 					return;
 				}
 
+                // CSRF mitigation: verify state matches the one we generated earlier
 				if (params.get("state") !== state) {
 					res.writeHead(400, { "Content-Type": "text/plain" });
 					res.end("Invalid state");
@@ -101,10 +116,12 @@ export const descopeOAuthLogin = async (
 					return;
 				}
 
+                // Inform the user and continue with server-side token exchange
 				res.writeHead(200, { "Content-Type": "text/html" });
 				res.end("Login successful! You may close this browser window.");
 				cleanup();
 
+                // Exchange authorization code for tokens
 				exchangeCodeForToken(tokenEndpoint, {
 					grant_type: "authorization_code",
 					client_id: projectId,
@@ -118,6 +135,7 @@ export const descopeOAuthLogin = async (
 		});
 
 		server.listen(callbackPort, () => {
+                // Open the user's browser to continue authentication
                 console.error(chalk.yellow(`Opening browser to: ${authURL}`));
 			openUrl(authURL);
 		});
@@ -126,6 +144,9 @@ export const descopeOAuthLogin = async (
 	});
 };
 
+/**
+ * Exchange an authorization code for tokens at the token endpoint.
+ */
 const exchangeCodeForToken = async (
 	tokenEndpoint: string,
 	params: Record<string, string>,

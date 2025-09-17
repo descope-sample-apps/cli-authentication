@@ -60,6 +60,10 @@ node build/index.js login-oauth -p <PROJECT_ID> \
 Options:
 - `-b, --baseUrl` Descope base URL (default `https://api.descope.com`)
 - `-c, --callbackPort` Local callback port (default `8088`)
+- `-o, --output` What to print (default `session`). One of:
+  - `session` — session token only
+  - `refresh` — refresh token only (if provided by your configuration)
+  - `json` — both tokens as `{ sessionJwt, refreshJwt }`
 
 Note: Ensure your Descope project allows the redirect URI `http://localhost:<CALLBACK_PORT>/callback`.
 
@@ -115,4 +119,4 @@ Token cache is disabled. Tokens are not stored on disk.
 Open issues and feature requests at the repository issues page.
 
 ## 📜 License
-ISC — see the [LICENSE](LICENSE) file for details.
+ISC — see `package.json` for details.
