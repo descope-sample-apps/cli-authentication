@@ -44,7 +44,7 @@ Run commands after building, e.g. `node build/index.js <command> [options]`.
 node build/index.js login -p <PROJECT_ID> -e <EMAIL>
 ```
 Flow:
-- Sends an email OTP using SignUpOrIn flow.
+- Sends an email OTP using the email OTP function as part of our SDK (no flows)
 - Prompts for the code and verifies it.
 - Prints the returned JWT payload.
 
