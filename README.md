@@ -1,7 +1,7 @@
 ## Descope CLI Authentication
 
 This repo showcases how to authenticate users using a Node CLI and the Descope Node SDK.
-Authenticate users from the command line using the Descope Node SDK. Supports OTP (email) and OAuth2 (PKCE via browser), token validation/refresh, and fetching user info. OAuth login prints the full session token to stdout; no token cache is used.
+Authenticate users from the command line using the Descope Node SDK. Supports OTP (email) and OAuth2 (Auth Code Flow with PKCE), token validation/refresh, and fetching user info. OAuth login prints the full session token to stdout; no token cache is used.
 Once a user is signed in - you can use the session JWT to send to any backend service to be validated with Descope SDK. 
 
 ### 🎨 Features
