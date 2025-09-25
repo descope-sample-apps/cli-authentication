@@ -90,7 +90,9 @@ export const descopeOAuthLogin = async (
 
 				if (params.get("error")) {
 					const errorDesc = params.get("error_description");
-					console.error(chalk.red(`OAuth Error: ${params.get("error")} - ${errorDesc}`));
+					const errorParam = (params.get("error") ?? "").replace(/[\r\n]/g, "");
+					const errorDescSanitized = (errorDesc ?? "").replace(/[\r\n]/g, "");
+					console.error(chalk.red(`OAuth Error: ${errorParam} - ${errorDescSanitized}`));
 					res.writeHead(400, { "Content-Type": "text/plain" });
 					res.end(`OAuth error: ${params.get("error")} - ${errorDesc}`);
 					cleanup();
